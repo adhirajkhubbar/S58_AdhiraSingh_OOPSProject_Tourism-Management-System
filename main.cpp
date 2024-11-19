@@ -33,13 +33,17 @@ public:
         cout << "Location: " << location << endl;
         cout << "Operating Hours: " << operatingHours << endl;
     }
+
+    ~Attraction() { // Destructor to release memory
+        cout << "Deallocating memory for Attraction: " << name << endl;
+    }
 };
 
 // Class representing a booking
 class Booking {
 private:
     string visitorName;
-    Attraction* attraction;
+    Attraction* attraction; // Pointer to dynamically allocated Attraction object
     string bookingDate;
 
 public:
@@ -50,6 +54,10 @@ public:
         cout << "Visitor: " << visitorName << endl;
         cout << "Attraction: " << attraction->getName() << endl; // Using this pointer
         cout << "Booking Date: " << bookingDate << endl;
+    }
+
+    ~Booking() { // Destructor to release memory (optional)
+        cout << "Deallocating memory for Booking of " << visitorName << endl;
     }
 };
 
@@ -80,7 +88,7 @@ public:
 // Class representing a tour package
 class TourPackage : public TourEntity {
 private:
-    vector<Attraction*> attractions;
+    vector<Attraction*> attractions; // Vector of pointers to dynamically allocated Attraction objects
     double price;
 
 public:
@@ -96,6 +104,13 @@ public:
         cout << "Included Attractions:" << endl;
         for (Attraction* attr : attractions) {
             cout << "- " << attr->getName() << endl;
+        }
+    }
+
+    ~TourPackage() { // Destructor to release memory for attractions
+        cout << "Deallocating memory for attractions in Tour Package: " << name << endl;
+        for (Attraction* attr : attractions) {
+            delete attr; // Release memory for each Attraction object
         }
     }
 };
@@ -144,22 +159,9 @@ public:
 
 // Main function to demonstrate the system
 int main() {
-    // Create an array of attractions
-    Attraction attractions[3] = {
-        Attraction("Grand Canyon", "A stunning natural wonder.", "Arizona, USA", "6 AM - 6 PM"),
-        Attraction("Eiffel Tower", "Iconic symbol of Paris.", "Paris, France", "9 AM - 11 PM"),
-        Attraction("Colosseum", "Ancient Roman amphitheater.", "Rome, Italy", "9 AM - 7 PM")
-    };
-
-    // ... rest of your code ...
-
-    // Iterate through the array and display information
-    for (int i = 0; i < 3; ++i) {
-        attractions[i].displayInfo();
-        cout << endl;
-    }
-
-    // ... rest of your code ...
+    // Create attractions using dynamic memory allocation
+    Attraction* attraction1 = new Attraction("Grand Canyon", "A stunning natural wonder.", "Arizona, USA", "6 AM - 6 PM");
+    Attraction* attraction2 = new Attraction("Eiffel Tower", "Iconic symbol of Paris.", "Paris, France", "9 AM - 11 PM");
 
     // Create a tour package
     TourPackage* package1 = new TourPackage("Adventure Package", 299.99);

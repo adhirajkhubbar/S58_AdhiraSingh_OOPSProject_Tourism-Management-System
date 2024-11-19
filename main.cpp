@@ -144,9 +144,22 @@ public:
 
 // Main function to demonstrate the system
 int main() {
-    // Create attractions using dynamic memory allocation
-    Attraction* attraction1 = new Attraction("Grand Canyon", "A stunning natural wonder.", "Arizona, USA", "6 AM - 6 PM");
-    Attraction* attraction2 = new Attraction("Eiffel Tower", "Iconic symbol of Paris.", "Paris, France", "9 AM - 11 PM");
+    // Create an array of attractions
+    Attraction attractions[3] = {
+        Attraction("Grand Canyon", "A stunning natural wonder.", "Arizona, USA", "6 AM - 6 PM"),
+        Attraction("Eiffel Tower", "Iconic symbol of Paris.", "Paris, France", "9 AM - 11 PM"),
+        Attraction("Colosseum", "Ancient Roman amphitheater.", "Rome, Italy", "9 AM - 7 PM")
+    };
+
+    // ... rest of your code ...
+
+    // Iterate through the array and display information
+    for (int i = 0; i < 3; ++i) {
+        attractions[i].displayInfo();
+        cout << endl;
+    }
+
+    // ... rest of your code ...
 
     // Create a tour package
     TourPackage* package1 = new TourPackage("Adventure Package", 299.99);

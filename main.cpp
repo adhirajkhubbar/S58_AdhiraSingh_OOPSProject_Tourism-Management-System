@@ -24,8 +24,13 @@ private:
     string operatingHours;
 
 public:
-    Attraction(string n, string desc, string loc, string hours) 
-        : TourEntity(n), description(desc), location(loc), operatingHours(hours) {}
+    Attraction(string n, string desc, string loc, string hours)
+        : TourEntity(n), description(desc), location(loc), operatingHours(hours) {
+        // Input validation
+        if (n.empty() || desc.empty() || loc.empty() || hours.empty()) {
+            throw invalid_argument("Invalid input: All fields must be non-empty.");
+        }
+    }
 
     void displayInfo() override { // Polymorphism
         cout << "Attraction Name: " << name << endl;
@@ -48,7 +53,7 @@ private:
     string bookingDate;
 
 public:
-    Booking(string name, Attraction* attr, string date) 
+    Booking(string name, Attraction* attr, string date)
         : visitorName(name), attraction(attr), bookingDate(date) {
         bookingCounter++; // Increment booking count
     }
@@ -60,8 +65,8 @@ public:
         cout << "Booking ID: " << bookingCounter << endl; // Access static variable
     }
 
-    static int getTotalBookings() {
-        return bookingCounter;
+    static void displayTotalBookings() { // Static member function
+        cout << "Total Bookings: " << bookingCounter << endl;
     }
 
     ~Booking() { // Destructor to release memory (optional)
@@ -80,11 +85,11 @@ private:
     int rating;
 
 public:
-    Feedback(string name, string attrName, string comm, int rate) 
+    Feedback(string name, string attrName, string comm, int rate)
         : visitorName(name), attractionName(attrName), comments(comm), rating(rate) {}
 
-    Feedback(const Booking& booking, string comm, int rate) 
-        : visitorName(booking.visitorName), attractionName(booking.attraction->getName()), 
+    Feedback(const Booking& booking, string comm, int rate)
+        : visitorName(booking.visitorName), attractionName(booking.attraction->getName()),
           comments(comm), rating(rate) {}
 
     void displayFeedback() {
@@ -171,7 +176,7 @@ public:
 int main() {
     // Create attractions using dynamic memory allocation
     Attraction* attraction1 = new Attraction("Grand Canyon", "A stunning natural wonder.", "Arizona, USA", "6 AM - 6 PM");
-    Attraction* attraction2 = new Attraction("Eiffel Tower", "Iconic symbol of Paris.", "Paris, France", "9 AM - 10 PM");
+    Attraction* attraction2 = new Attraction("Eiffel Tower", "Iconic symbol of Paris.", "Paris, France", "9 AM - 11 PM");
 
     // Create a tour package
     TourPackage* package1 = new TourPackage("Adventure Package", 299.99);
@@ -205,7 +210,7 @@ int main() {
     cout << endl;
 
     cout << "Total Bookings: " << BookingManager::getTotalBookings() << endl;
-    cout << "Total Bookings: " << Booking::getTotalBookings() << endl;
+    Booking::displayTotalBookings(); // Using the static member function
 
     // Free dynamically allocated memory
     delete attraction1;

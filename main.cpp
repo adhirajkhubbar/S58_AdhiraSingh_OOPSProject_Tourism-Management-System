@@ -42,24 +42,34 @@ public:
 // Class representing a booking
 class Booking {
 private:
+    static int bookingCounter; // Static variable to keep track of booking count
     string visitorName;
     Attraction* attraction; // Pointer to dynamically allocated Attraction object
     string bookingDate;
 
 public:
     Booking(string name, Attraction* attr, string date) 
-        : visitorName(name), attraction(attr), bookingDate(date) {}
+        : visitorName(name), attraction(attr), bookingDate(date) {
+        bookingCounter++; // Increment booking count
+    }
 
     void displayBooking() {
         cout << "Visitor: " << visitorName << endl;
         cout << "Attraction: " << attraction->getName() << endl; // Using this pointer
         cout << "Booking Date: " << bookingDate << endl;
+        cout << "Booking ID: " << bookingCounter << endl; // Access static variable
+    }
+
+    static int getTotalBookings() {
+        return bookingCounter;
     }
 
     ~Booking() { // Destructor to release memory (optional)
         cout << "Deallocating memory for Booking of " << visitorName << endl;
     }
 };
+
+int Booking::bookingCounter = 0; // Initialize static variable outside the class
 
 // Class representing visitor feedback
 class Feedback {
@@ -161,7 +171,7 @@ public:
 int main() {
     // Create attractions using dynamic memory allocation
     Attraction* attraction1 = new Attraction("Grand Canyon", "A stunning natural wonder.", "Arizona, USA", "6 AM - 6 PM");
-    Attraction* attraction2 = new Attraction("Eiffel Tower", "Iconic symbol of Paris.", "Paris, France", "9 AM - 11 PM");
+    Attraction* attraction2 = new Attraction("Eiffel Tower", "Iconic symbol of Paris.", "Paris, France", "9 AM - 10 PM");
 
     // Create a tour package
     TourPackage* package1 = new TourPackage("Adventure Package", 299.99);
@@ -195,6 +205,7 @@ int main() {
     cout << endl;
 
     cout << "Total Bookings: " << BookingManager::getTotalBookings() << endl;
+    cout << "Total Bookings: " << Booking::getTotalBookings() << endl;
 
     // Free dynamically allocated memory
     delete attraction1;

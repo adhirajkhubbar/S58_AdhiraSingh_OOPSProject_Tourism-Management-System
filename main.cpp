@@ -9,10 +9,11 @@ using namespace std;
 class TourEntity {
 protected:
     string name; // Encapsulation: name is protected to restrict direct access
+
 public:
     TourEntity(string n) : name(n) {} // Constructor
     virtual void displayInfo() = 0; // Pure virtual function for polymorphism
-    string getName() { return name; } // Accessor
+    string getName() const { return name; } // Accessor
     virtual ~TourEntity() {} // Destructor
 };
 
@@ -33,14 +34,14 @@ public:
     }
 
     void displayInfo() override { // Polymorphism
-        cout << "Attraction Name: " << name << endl;
+        cout << "Attraction Name: " << getName() << endl; // Using accessor
         cout << "Description: " << description << endl;
         cout << "Location: " << location << endl;
         cout << "Operating Hours: " << operatingHours << endl;
     }
 
     ~Attraction() { // Destructor to release memory
-        cout << "Deallocating memory for Attraction: " << name << endl;
+        cout << "Deallocating memory for Attraction: " << getName() << endl;
     }
 };
 
@@ -59,8 +60,8 @@ public:
     }
 
     void displayBooking() {
-        cout << "Visitor: " << visitorName << endl;
-        cout << "Attraction: " << attraction->getName() << endl; // Using this pointer
+        cout << "Visitor: " << visitorsName << endl;
+        cout << "Attraction: " << attraction->getName() << endl; // Using accessor
         cout << "Booking Date: " << bookingDate << endl;
         cout << "Booking ID: " << bookingCounter << endl; // Access static variable
     }
@@ -114,7 +115,7 @@ public:
     }
 
     void displayInfo() override { // Polymorphism
-        cout << "Tour Package: " << name << endl;
+        cout << "Tour Package: " << getName() << endl; // Using accessor
         cout << "Price: $" << price << endl;
         cout << "Included Attractions:" << endl;
         for (Attraction* attr : attractions) {
@@ -123,7 +124,7 @@ public:
     }
 
     ~TourPackage() { // Destructor to release memory for attractions
-        cout << "Deallocating memory for attractions in Tour Package: " << name << endl;
+        cout << "Deallocating memory for attractions in Tour Package: " << getName() << endl;
         for (Attraction* attr : attractions) {
             delete attr; // Release memory for each Attraction object
         }

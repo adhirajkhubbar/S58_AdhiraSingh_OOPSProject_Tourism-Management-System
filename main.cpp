@@ -60,7 +60,7 @@ public:
     }
 
     void displayBooking() {
-        cout << "Visitor: " << visitorsName << endl;
+        cout << "Visitor: " << visitorName << endl;
         cout << "Attraction: " << attraction->getName() << endl; // Using accessor
         cout << "Booking Date: " << bookingDate << endl;
         cout << "Booking ID: " << bookingCounter << endl; // Access static variable

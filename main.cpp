@@ -11,10 +11,21 @@ protected:
     string name; // Encapsulation: name is protected to restrict direct access
 
 public:
-    TourEntity(string n) : name(n) {} // Constructor
+    // Default constructor
+    TourEntity() : name("") {
+        cout << "Default constructor called for TourEntity." << endl;
+    }
+
+    // Constructor with name parameter
+    TourEntity(string n) : name(n) {
+        cout << "Constructor called for TourEntity with name: " << n << endl;
+    }
+
     virtual void displayInfo() = 0; // Pure virtual function for polymorphism
     string getName() const { return name; } // Accessor
-    virtual ~TourEntity() {} // Destructor
+    virtual ~TourEntity() {
+        cout << "Destructor called for TourEntity: " << name << endl;
+    }
 };
 
 // Class representing a tourist attraction
@@ -25,8 +36,13 @@ private:
     string operatingHours;
 
 public:
+    // Default constructor (not recommended)
+    Attraction() : TourEntity() {} // Inherits default constructor from TourEntity
+
+    // Constructor with all parameters
     Attraction(string n, string desc, string loc, string hours)
         : TourEntity(n), description(desc), location(loc), operatingHours(hours) {
+        cout << "Constructor called for Attraction with all parameters." << endl;
         // Input validation
         if (n.empty() || desc.empty() || loc.empty() || hours.empty()) {
             throw invalid_argument("Invalid input: All fields must be non-empty.");
@@ -54,9 +70,11 @@ private:
     string bookingDate;
 
 public:
+    // Constructor with all parameters
     Booking(string name, Attraction* attr, string date)
         : visitorName(name), attraction(attr), bookingDate(date) {
         bookingCounter++; // Increment booking count
+        cout << "Constructor called for Booking." << endl;
     }
 
     void displayBooking() {
@@ -86,8 +104,11 @@ private:
     int rating;
 
 public:
+    // Constructor with all parameters
     Feedback(string name, string attrName, string comm, int rate)
-        : visitorName(name), attractionName(attrName), comments(comm), rating(rate) {}
+        : visitorName(name), attractionName(attrName), comments(comm), rating(rate) {
+        cout << "Constructor called for Feedback." << endl;
+    }
 
     Feedback(const Booking& booking, string comm, int rate)
         : visitorName(booking.visitorName), attractionName(booking.attraction->getName()),
@@ -108,7 +129,10 @@ private:
     double price;
 
 public:
-    TourPackage(string name, double p) : TourEntity(name), price(p) {}
+    // Constructor with name and price
+    TourPackage(string name, double p) : TourEntity(name), price(p) {
+        cout << "Constructor called for TourPackage." << endl;
+    }
 
     void addAttraction(Attraction* attr) {
         attractions.push_back(attr);
@@ -140,7 +164,9 @@ private:
     vector<Feedback> feedbacks;
 
 public:
-    UserProfile(string n, string e) : name(n), email(e) {}
+    UserProfile(string n, string e) : name(n), email(e) {
+        cout << "Constructor called for UserProfile." << endl;
+    }
 
     void addBooking(Booking booking) {
         bookings.push_back(booking);

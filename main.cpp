@@ -8,23 +8,17 @@ using namespace std;
 // Abstract base class for all entities in the tourism system
 class TourEntity {
 protected:
-    string name; // Encapsulation: name is protected to restrict direct access
+    string name;
 
 public:
-    // Default constructor
-    TourEntity() : name("") {
-        cout << "Default constructor called for TourEntity." << endl;
-    }
-
-    // Constructor with name parameter
     TourEntity(string n) : name(n) {
-        cout << "Constructor called for TourEntity with name: " << n << endl;
+        cout << "TourEntity constructor called: " << name << endl;
     }
 
-    virtual void displayInfo() = 0; // Pure virtual function for polymorphism
-    string getName() const { return name; } // Accessor
+    virtual void displayInfo() = 0;
+    string getName() const { return name; }
     virtual ~TourEntity() {
-        cout << "Destructor called for TourEntity: " << name << endl;
+        cout << "TourEntity destructor called: " << name << endl;
     }
 };
 
@@ -36,64 +30,78 @@ private:
     string operatingHours;
 
 public:
-    // Default constructor (not recommended)
-    Attraction() : TourEntity() {} // Inherits default constructor from TourEntity
-
-    // Constructor with all parameters
     Attraction(string n, string desc, string loc, string hours)
         : TourEntity(n), description(desc), location(loc), operatingHours(hours) {
-        cout << "Constructor called for Attraction with all parameters." << endl;
-        // Input validation
-        if (n.empty() || desc.empty() || loc.empty() || hours.empty()) {
-            throw invalid_argument("Invalid input: All fields must be non-empty.");
-        }
+        cout << "Attraction constructor called: " << name << endl;
     }
 
-    void displayInfo() override { // Polymorphism
-        cout << "Attraction Name: " << getName() << endl; // Using accessor
+    void displayInfo() override {
+        cout << "Attraction Name: " << getName() << endl;
         cout << "Description: " << description << endl;
         cout << "Location: " << location << endl;
         cout << "Operating Hours: " << operatingHours << endl;
     }
 
-    ~Attraction() { // Destructor to release memory
-        cout << "Deallocating memory for Attraction: " << getName() << endl;
+    ~Attraction() {
+        cout << "Attraction destructor called: " << name << endl;
+    }
+};
+
+// Class representing a special event (derived from Attraction)
+class SpecialEvent : public Attraction {
+private:
+    string startDate;
+    string endDate;
+
+public:
+    SpecialEvent(string n, string desc, string loc, string hours, string start, string end)
+        : Attraction(n, desc, loc, hours), startDate(start), endDate(end) {
+        cout << "SpecialEvent constructor called: " << name << endl;
+    }
+
+    void displayInfo() override {
+        Attraction::displayInfo();
+        cout << "Start Date: " << startDate << endl;
+        cout << "End Date: " << endDate << endl;
+    }
+
+    ~SpecialEvent() {
+        cout << "SpecialEvent destructor called: " << name << endl;
     }
 };
 
 // Class representing a booking
 class Booking {
 private:
-    static int bookingCounter; // Static variable to keep track of booking count
+    static int bookingCounter;
     string visitorName;
-    Attraction* attraction; // Pointer to dynamically allocated Attraction object
+    TourEntity* entity; // Pointer to a base class (can point to either Attraction or SpecialEvent)
     string bookingDate;
 
 public:
-    // Constructor with all parameters
-    Booking(string name, Attraction* attr, string date)
-        : visitorName(name), attraction(attr), bookingDate(date) {
-        bookingCounter++; // Increment booking count
-        cout << "Constructor called for Booking." << endl;
+    Booking(string name, TourEntity* ent, string date)
+        : visitorName(name), entity(ent), bookingDate(date) {
+        bookingCounter++;
+        cout << "Booking constructor called." << endl;
     }
 
     void displayBooking() {
         cout << "Visitor: " << visitorName << endl;
-        cout << "Attraction: " << attraction->getName() << endl; // Using accessor
+        cout << "Entity: " << entity->getName() << endl;
         cout << "Booking Date: " << bookingDate << endl;
-        cout << "Booking ID: " << bookingCounter << endl; // Access static variable
+        cout << "Booking ID: " << bookingCounter << endl;
     }
 
-    static void displayTotalBookings() { // Static member function
+    static void displayTotalBookings() {
         cout << "Total Bookings: " << bookingCounter << endl;
     }
 
-    ~Booking() { // Destructor to release memory (optional)
-        cout << "Deallocating memory for Booking of " << visitorName << endl;
+    ~Booking() {
+        cout << "Booking destructor called: " << visitorName << endl;
     }
 };
 
-int Booking::bookingCounter = 0; // Initialize static variable outside the class
+int Booking::bookingCounter = 0;
 
 // Class representing visitor feedback
 class Feedback {
@@ -104,14 +112,13 @@ private:
     int rating;
 
 public:
-    // Constructor with all parameters
     Feedback(string name, string attrName, string comm, int rate)
         : visitorName(name), attractionName(attrName), comments(comm), rating(rate) {
-        cout << "Constructor called for Feedback." << endl;
+        cout << "Feedback constructor called." << endl;
     }
 
     Feedback(const Booking& booking, string comm, int rate)
-        : visitorName(booking.visitorName), attractionName(booking.attraction->getName()),
+        : visitorName(booking.visitorName), attractionName(booking.entity->getName()),
           comments(comm), rating(rate) {}
 
     void displayFeedback() {
@@ -125,21 +132,20 @@ public:
 // Class representing a tour package
 class TourPackage : public TourEntity {
 private:
-    vector<Attraction*> attractions; // Vector of pointers to dynamically allocated Attraction objects
+    vector<Attraction*> attractions;
     double price;
 
 public:
-    // Constructor with name and price
     TourPackage(string name, double p) : TourEntity(name), price(p) {
-        cout << "Constructor called for TourPackage." << endl;
+        cout << "TourPackage constructor called: " << name << endl;
     }
 
     void addAttraction(Attraction* attr) {
         attractions.push_back(attr);
     }
 
-    void displayInfo() override { // Polymorphism
-        cout << "Tour Package: " << getName() << endl; // Using accessor
+    void displayInfo() override {
+        cout << "Tour Package: " << getName() << endl;
         cout << "Price: $" << price << endl;
         cout << "Included Attractions:" << endl;
         for (Attraction* attr : attractions) {
@@ -147,10 +153,10 @@ public:
         }
     }
 
-    ~TourPackage() { // Destructor to release memory for attractions
-        cout << "Deallocating memory for attractions in Tour Package: " << getName() << endl;
+    ~TourPackage() {
+        cout << "TourPackage destructor called: " << name << endl;
         for (Attraction* attr : attractions) {
-            delete attr; // Release memory for each Attraction object
+            delete attr;
         }
     }
 };
@@ -165,7 +171,7 @@ private:
 
 public:
     UserProfile(string n, string e) : name(n), email(e) {
-        cout << "Constructor called for UserProfile." << endl;
+        cout << "UserProfile constructor called: " << name << endl;
     }
 
     void addBooking(Booking booking) {
@@ -187,6 +193,10 @@ public:
             f.displayFeedback();
         }
     }
+
+    ~UserProfile() {
+        cout << "UserProfile destructor called: " << name << endl;
+    }
 };
 
 // Static member variable to track the number of bookings
@@ -205,6 +215,9 @@ int main() {
     Attraction* attraction1 = new Attraction("Grand Canyon", "A stunning natural wonder.", "Arizona, USA", "6 AM - 6 PM");
     Attraction* attraction2 = new Attraction("Eiffel Tower", "Iconic symbol of Paris.", "Paris, France", "9 AM - 11 PM");
 
+    // Create a special event
+    SpecialEvent* event1 = new SpecialEvent("New Year's Eve Fireworks", "A spectacular fireworks display", "Times Square, New York", "All Day", "2023-12-31", "2024-01-01");
+
     // Create a tour package
     TourPackage* package1 = new TourPackage("Adventure Package", 299.99);
     package1->addAttraction(attraction1);
@@ -215,8 +228,10 @@ int main() {
 
     // Create bookings and feedback
     Booking booking1("Alice Johnson", attraction1, "2024-05-01");
+    Booking booking2("Bob Smith", event1, "2023-12-31");
     user1.addBooking(booking1);
-    BookingManager::incrementBooking(); // Increment booking count
+    user1.addBooking(booking2);
+    BookingManager::incrementBooking(); // Increment booking count twice
 
     Feedback feedback1(booking1, "Amazing experience!", 5);
     user1.addFeedback(feedback1);
@@ -228,6 +243,10 @@ int main() {
     attraction2->displayInfo();
     cout << endl;
 
+    cout << "=== Special Event ===" << endl;
+    event1->displayInfo();
+    cout << endl;
+
     cout << "=== Tour Package ===" << endl;
     package1->displayInfo();
     cout << endl;
@@ -237,7 +256,7 @@ int main() {
     cout << endl;
 
     cout << "Total Bookings: " << BookingManager::getTotalBookings() << endl;
-    Booking::displayTotalBookings(); // Using the static member function
+    Booking::displayTotalBookings();
 
     // Free dynamically allocated memory
     delete attraction1;

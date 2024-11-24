@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <ctime>
+#include <fstream>
 
 using namespace std;
 
@@ -9,14 +11,17 @@ using namespace std;
 class TourEntity {
 protected:
     string name;
+    double rating; // Average user rating
 
 public:
-    TourEntity(string n) : name(n) {
+    TourEntity(string n, double r = 0.0) : name(n), rating(r) {
         cout << "TourEntity constructor called: " << name << endl;
     }
 
-    virtual void displayInfo() = 0;
+    virtual void displayInfo() const = 0;
     string getName() const { return name; }
+    double getRating() const { return rating; }
+    virtual void updateRating(int newRating) = 0;
     virtual ~TourEntity() {
         cout << "TourEntity destructor called: " << name << endl;
     }
@@ -28,21 +33,36 @@ private:
     string description;
     string location;
     string operatingHours;
+    vector<Feedback> feedbacks; // User feedback for this attraction
 
 public:
-    Attraction(string n, string desc, string loc, string hours)
-        : TourEntity(n), description(desc), location(loc), operatingHours(hours) {
+    Attraction(string n, string desc, string loc, string hours, double r = 0.0)
+        : TourEntity(n, r), description(desc), location(loc), operatingHours(hours) {
         cout << "Attraction constructor called: " << name << endl;
     }
 
-    void displayInfo() override {
+    void displayInfo() const override {
         cout << "Attraction Name: " << getName() << endl;
         cout << "Description: " << description << endl;
         cout << "Location: " << location << endl;
         cout << "Operating Hours: " << operatingHours << endl;
+        cout << "Average Rating: " << fixed << setprecision(1) << getRating() << "/5" << endl;
     }
 
-    ~Attraction() {
+    void updateRating(int newRating) override {
+        feedbacks.push_back(Feedback(newRating)); // Add feedback with new rating
+        rating = calculateAverageRating();
+    }
+
+    double calculateAverageRating() const {
+        double sum = 0.0;
+        for (const Feedback& f : feedbacks) {
+            sum += f.getRating();
+        }
+        return (feedbacks.empty()) ? 0.0 : sum / feedbacks.size();
+    }
+
+    ~Attraction() override {
         cout << "Attraction destructor called: " << name << endl;
     }
 };
@@ -54,18 +74,18 @@ private:
     string endDate;
 
 public:
-    SpecialEvent(string n, string desc, string loc, string hours, string start, string end)
-        : Attraction(n, desc, loc, hours), startDate(start), endDate(end) {
+    SpecialEvent(string n, string desc, string loc, string hours, string start, string end, double r = 0.0)
+        : Attraction(n, desc, loc, hours, r), startDate(start), endDate(end) {
         cout << "SpecialEvent constructor called: " << name << endl;
     }
 
-    void displayInfo() override {
+    void displayInfo() const override {
         Attraction::displayInfo();
         cout << "Start Date: " << startDate << endl;
         cout << "End Date: " << endDate << endl;
     }
 
-    ~SpecialEvent() {
+    ~SpecialEvent() override {
         cout << "SpecialEvent destructor called: " << name << endl;
     }
 };
@@ -77,10 +97,11 @@ private:
     string visitorName;
     TourEntity* entity; // Pointer to a base class (can point to either Attraction or SpecialEvent)
     string bookingDate;
+    string status; // Booking status (e.g., Confirmed, Pending, Cancelled)
 
 public:
-    Booking(string name, TourEntity* ent, string date)
-        : visitorName(name), entity(ent), bookingDate(date) {
+    Booking(string name, TourEntity* ent, string date, string stat = "Confirmed")
+        : visitorName(name), entity(ent), bookingDate(date), status(stat) {
         bookingCounter++;
         cout << "Booking constructor called." << endl;
     }
@@ -90,6 +111,7 @@ public:
         cout << "Entity: " << entity->getName() << endl;
         cout << "Booking Date: " << bookingDate << endl;
         cout << "Booking ID: " << bookingCounter << endl;
+        cout << "Status: " << status << endl;
     }
 
     static void displayTotalBookings() {
@@ -106,27 +128,12 @@ int Booking::bookingCounter = 0;
 // Class representing visitor feedback
 class Feedback {
 private:
-    string visitorName;
-    string attractionName;
-    string comments;
     int rating;
 
 public:
-    Feedback(string name, string attrName, string comm, int rate)
-        : visitorName(name), attractionName(attrName), comments(comm), rating(rate) {
-        cout << "Feedback constructor called." << endl;
-    }
+    Feedback(int r) : rating(r) {}
 
-    Feedback(const Booking& booking, string comm, int rate)
-        : visitorName(booking.visitorName), attractionName(booking.entity->getName()),
-          comments(comm), rating(rate) {}
-
-    void displayFeedback() {
-        cout << "Visitor: " << visitorName << endl;
-        cout << "Attraction: " << attractionName << endl;
-        cout << "Comments: " << comments << endl;
-        cout << "Rating: " << rating << "/5" << endl;
-    }
+    int getRating() const { return rating; }
 };
 
 // Class representing a tour package
@@ -136,7 +143,7 @@ private:
     double price;
 
 public:
-    TourPackage(string name, double p) : TourEntity(name), price(p) {
+    TourPackage(string name, double p, double r = 0.0) : TourEntity(name, r), price(p) {
         cout << "TourPackage constructor called: " << name << endl;
     }
 
@@ -144,13 +151,23 @@ public:
         attractions.push_back(attr);
     }
 
-    void displayInfo() override {
+    void displayInfo() const override {
         cout << "Tour Package: " << getName() << endl;
         cout << "Price: $" << price << endl;
         cout << "Included Attractions:" << endl;
         for (Attraction* attr : attractions) {
             cout << "- " << attr->getName() << endl;
         }
+        cout << "Average Rating: " << fixed << setprecision(1) << getRating() << "/5" << endl;
+    }
+
+    void updateRating(int newRating) override {
+        // Calculate average rating based on included attractions
+        double sum = 0.0;
+        for (Attraction* attr : attractions) {
+            sum += attr->getRating();
+        }
+        rating = sum / attractions.size();
     }
 
     ~TourPackage() {
